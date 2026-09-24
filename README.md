@@ -29,15 +29,15 @@ a kick.</sub>
 
 ## Download
 
-**[v0.1.0](https://github.com/stoatworks-labs/repousse/releases/tag/v0.1.0)** — prebuilt for macOS and Windows. Pick your platform:
+**[v0.1.1](https://github.com/stoatworks-labs/repousse/releases/tag/v0.1.1)** — prebuilt for macOS and Windows. Pick your platform:
 
 <details>
 <summary><b>macOS</b> — Universal (Apple Silicon + Intel)</summary>
 
 | Build | Download | Size |
 | --- | --- | --- |
-| Universal (Apple Silicon + Intel) · .dmg disk image | [`repousse-0.1.0-macos-universal.dmg`](https://github.com/stoatworks-labs/repousse/releases/download/v0.1.0/repousse-0.1.0-macos-universal.dmg) | 209 KB |
-| Universal (Apple Silicon + Intel) · .zip archive | [`repousse-macos-universal.zip`](https://github.com/stoatworks-labs/repousse/releases/latest/download/repousse-macos-universal.zip) | 171 KB |
+| Universal (Apple Silicon + Intel) · .dmg disk image | [`repousse-0.1.1-macos-universal.dmg`](https://github.com/stoatworks-labs/repousse/releases/download/v0.1.1/repousse-0.1.1-macos-universal.dmg) | 210 KB |
+| Universal (Apple Silicon + Intel) · .zip archive | [`repousse-macos-universal.zip`](https://github.com/stoatworks-labs/repousse/releases/latest/download/repousse-macos-universal.zip) | 172 KB |
 
 </details>
 
@@ -46,7 +46,7 @@ a kick.</sub>
 
 | Build | Download | Size |
 | --- | --- | --- |
-| x64 · .exe installer | [`repousse-0.1.0-windows-x86_64-setup.exe`](https://github.com/stoatworks-labs/repousse/releases/download/v0.1.0/repousse-0.1.0-windows-x86_64-setup.exe) | 219 KB |
+| x64 · .exe installer | [`repousse-0.1.1-windows-x86_64-setup.exe`](https://github.com/stoatworks-labs/repousse/releases/download/v0.1.1/repousse-0.1.1-windows-x86_64-setup.exe) | 220 KB |
 | x64 · .zip archive | [`repousse-windows-x86_64.zip`](https://github.com/stoatworks-labs/repousse/releases/latest/download/repousse-windows-x86_64.zip) | 111 KB |
 
 </details>
