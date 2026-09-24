@@ -69,7 +69,7 @@ Repousse::Repousse()
 	params[ PT_PUNCH ]     = 0.25f; //4 px
 	params[ PT_SMOOTH ]    = 1.0f / 3.0f;//sigma 1 px: 8-bit footage's terraces
 	params[ PT_METAL ]     = static_cast< float >( controls::kCopper );
-	params[ PT_ROUGHNESS ] = 0.4f;
+	params[ PT_ROUGHNESS ] = 0.5f; //alpha 0.5: the pool under the lamp peaks at 0.86, unclipped
 	params[ PT_PATINA ]    = 0.6f;
 	params[ PT_COLOUR ]    = static_cast< float >( controls::kColourMetal );
 
