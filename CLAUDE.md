@@ -31,6 +31,8 @@ Read `AGENTS.md` before changing the punch, the lamp's law or the pendulum.
 - A resize mid-run: `./build/rptest --resize`
 - Every check can fail: `./build/rptest --negative` (`--perturb BITS` runs one verbosely)
 - Every check takes `--size`; run at 320x180 (CI's raster) as well as your own.
+- CI's renderer: `RPTEST_RENDERER=software ./build/rptest --resize --size 320x180` (Apple's
+  software renderer, not repeatable at the last bit; verify.sh runs this too).
 - No dead controls: `python3 tools/sweep.py` (`--size WxH`, `--jobs N`)
 - The shaders through glslc: `tools/check-shaders.sh build/rptest`
 - The browser demo's shaders are the plugin's, character for character: `python3 demo/tools/check_shaders.py`

@@ -185,6 +185,16 @@ applied, and then the frame's dt integrated, so the lamp has already moved 4.5 p
 the frame of a 3 rad/s kick at 180 rows. `--prime` first expected rest on that frame.
 It is the intended latency; the check now expects rest the frame before.
 
+**Apple's software renderer is not repeatable at the last bit, and CI's macOS runner is
+that renderer.** The first CI run failed `--resize` with 14,881 of 261,664 values differing
+between a resized instance and a fresh one; locally, `RPTEST_RENDERER=software` (wipe's
+switch, now in rptest) reproduced 14,881, then 94, then 0. Two *fresh* instances of the same
+frame differ on that renderer by one ulp on a few dozen values (1.49e-8 at 0.104), so the
+plugin was never the cause: "every value equal" is a claim only a repeatable renderer can
+meet. The check now allows 4 ulp + 2⁻²⁴ and reports the bit-exact count beside it (0 on this
+GPU), and verify.sh runs it on the software renderer too. Lesson, the fleet's again: run
+CI's exact command on CI's renderer before tagging.
+
 **Inherited from the fleet, and all still true here:** `ScopedFBOBinding` does not
 restore the viewport; every `ffglex::Scoped*` clears to 0 on exit, so every `Ensure()`
 happens before anything binds; `FFGLFBO::Release()` leaks the colour texture; a
@@ -223,7 +233,7 @@ relied on: `pow` (Schlick is a written-out product), exact cancellation, `mix(a,
 | `--pendulum` period | same-direction zero crossings of the lamp's x read from the picture against `T₀ S(θ̄)/√(1−ζ²)`, θ̄ the cycle's mean amplitude | 3e-4: a crossing time is off by the position's error (a parabola through a smooth even peak on a float readback, under 1e-3 px) over the velocity at the crossing (~250 px/s at 180 rows), plus the interpolation's cubic term (~1e-5 s); the series' next term is 2e-5 θ⁸; the decay across a cycle at ζ 0.01 moves the mean-amplitude period ~1e-5. Measured 3.9e-5 | the swing scales with H (57 px at 180) so the position term shrinks at wider rasters; measured alike |
 | `--pendulum` decay | the log decrement between same-sign peaks against `2πζ/√(1−ζ²)` | `ζθ₀²/4` for the nonlinear pendulum's departure from exponential decay (an O(θ²) effect; the coefficient is a bound, not a derivation) + 2e-3 (a sampled peak is low by up to (ωΔt)²/8 = 6e-4 of itself, twice, in a log). Measured 6.1e-4 / 1.2e-3 | none beyond the above |
 | `--prime` | the lamp's x over 60 frames of loud audio, a step, a scrub | 0.01 px on a lamp a kick moves by tens of pixels; the kick count exactly | none |
-| `--resize` | the frame after a resize against a fresh instance; the swinging lamp's x/W against an unresized run | **every value equal**; one pixel of either raster (measured 0: the same radians, the same fraction) | resizes to 1.5W+1 × 0.75H+1 at any raster |
+| `--resize` | the frame after a resize against a fresh instance; the swinging lamp's x/W against an unresized run | **every value equal on an accelerated renderer** (measured 0 of 4,157,044); on Apple's software renderer, which is not repeatable at the last bit itself (two FRESH instances of one frame differ on 5–44 values by one ulp, 1.49e-8 at 0.104, measured six times), 4 ulp + 2⁻²⁴; one pixel of either raster for the swing (measured 0: the same radians, the same fraction) | resizes to 1.5W+1 × 0.75H+1 at any raster |
 | `--controls` | nine mappings at 21 points, the metal table, the constants, the defaults | 1e-12 relative (two statements of one definition in double); the table exact | none (no GL) |
 | `--profile` | the paraboloid against the sphere | the closed form to 1e-12 R; < 1% R to R/2; R/2 at the rim | none (no GL) |
 | `--detector` | priming, one kick per hit, the second hit's size, the release τ, a jump, dt = 0 | exact where exact (kick 1.0, none while held), τ to 1e-9 from two frames' envelope ratio, the second kick to 1e-9 | none (no GL) |

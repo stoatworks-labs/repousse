@@ -214,9 +214,27 @@ CGLContextObj createContext()
 		static_cast< CGLPixelFormatAttribute >( 0 )
 	};
 
+	//RPTEST_RENDERER=software asks for Apple's software renderer by id, on a
+	//Mac that has a GPU. It is what a GPU-less CI runner falls back to, so a
+	//check that fails only in CI can be reproduced here (wipe's recipe).
+	const CGLPixelFormatAttribute generic[] = {
+		kCGLPFAOpenGLProfile, static_cast< CGLPixelFormatAttribute >( kCGLOGLPVersion_GL4_Core ),
+		kCGLPFARendererID, static_cast< CGLPixelFormatAttribute >( kCGLRendererGenericFloatID ),
+		kCGLPFAColorSize, static_cast< CGLPixelFormatAttribute >( 24 ),
+		kCGLPFAAlphaSize, static_cast< CGLPixelFormatAttribute >( 8 ),
+		static_cast< CGLPixelFormatAttribute >( 0 )
+	};
+
 	CGLPixelFormatObj format = nullptr;
 	GLint formatCount        = 0;
-	if( CGLChoosePixelFormat( accelerated, &format, &formatCount ) != kCGLNoError || format == nullptr )
+	const char* renderer     = std::getenv( "RPTEST_RENDERER" );
+	if( renderer != nullptr && std::strcmp( renderer, "software" ) == 0 )
+	{
+		if( CGLChoosePixelFormat( generic, &format, &formatCount ) != kCGLNoError || format == nullptr )
+			return nullptr;
+		std::fprintf( stderr, "rptest: RPTEST_RENDERER=software, Apple's software renderer\n" );
+	}
+	else if( CGLChoosePixelFormat( accelerated, &format, &formatCount ) != kCGLNoError || format == nullptr )
 	{
 		if( CGLChoosePixelFormat( software, &format, &formatCount ) != kCGLNoError || format == nullptr )
 			return nullptr;
@@ -1423,11 +1441,25 @@ int runResize( int width, int height, int perturb = 0, bool quiet = false )
 		const std::vector< float > expect = fresh.readBackFloat();
 		fresh.end();
 
+		//The tolerance is the renderer's own repeatability, not the plugin's: on
+		//Apple's software renderer (GitHub's macOS runners, RPTEST_RENDERER=software
+		//here) two FRESH instances of the same frame differ on a few dozen of
+		//261,664 values by one ulp (1.49e-8 at 0.104, measured 2026-09-24, six
+		//repeats), so "every value equal" is not a claim that renderer can meet.
+		//Four ulps of the value plus 2^-24 absolute; the accelerated renderer
+		//measures exactly 0.
 		size_t differ = after.size() == expect.size() ? 0 : after.size();
+		size_t exact  = 0;
+		double worst  = 0.0;
 		for( size_t i = 0; i < std::min( after.size(), expect.size() ); ++i )
-			differ += after[ i ] != expect[ i ] ? 1 : 0;
-		failures += report( differ == 0, quiet, "resize: %dx%d -> %dx%d mid-run, lamp at rest: the first frame after it against a fresh instance: %zu of %zu values differ",
-		                    width, height, w2, h2, differ, expect.size() );
+		{
+			const double d = std::fabs( static_cast< double >( after[ i ] ) - expect[ i ] );
+			exact += after[ i ] != expect[ i ] ? 1 : 0;
+			worst = std::max( worst, d );
+			differ += d > 4.0 * std::fabs( expect[ i ] ) * 1.1920929e-7 + 5.9604645e-8 ? 1 : 0;
+		}
+		failures += report( differ == 0, quiet, "resize: %dx%d -> %dx%d mid-run, lamp at rest: the first frame after it against a fresh instance: %zu of %zu values beyond 4 ulp + 2^-24 (%zu not bit-equal, worst %.2e; 0 on an accelerated renderer)",
+		                    width, height, w2, h2, differ, expect.size(), exact, worst );
 	}
 	{
 		Baseline bb = b;

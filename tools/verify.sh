@@ -207,6 +207,17 @@ else
 fi
 rm -f "$raw" "$many" "$cues"
 
+# The same resize check on Apple's SOFTWARE renderer, which is what GitHub's
+# macOS runners have: it is not repeatable at the last bit, and this is where
+# a check that asserts exactness on this Mac's GPU is found before CI finds it.
+step "software renderer"
+if out=$(RPTEST_RENDERER=software "$RPTEST" --resize --size 320x180 2>&1); then
+	pass "rptest --resize (software): $( printf '%s\n' "$out" | grep 'lamp at rest' | sed 's/.*instance: //' )"
+else
+	fail "rptest --resize on the software renderer -- run: RPTEST_RENDERER=software $RPTEST --resize --size 320x180"
+	printf '%s\n' "$out" | sed 's/^/      /'
+fi
+
 step "sweep"
 if out=$(python3 tools/sweep.py --binary "$RPTEST" 2>/dev/null); then
 	pass "$( printf '%s\n' "$out" | tail -1 )"
