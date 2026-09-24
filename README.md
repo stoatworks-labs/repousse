@@ -12,7 +12,8 @@
 > from its position in the picture over six seconds, is 2π√(L/g) with the large-angle
 > correction to 4 parts in 10⁵, and its decay matches the stated Q — with seventeen
 > negative controls that prove each check can fail, and one mutation of the shipped GLSL
-> that two of them catch. It has **never been loaded into Resolume**. See
+> that two of them catch. It has **never been loaded into Resolume on macOS**; on
+> Windows it has run in Resolume Arena 7.27.1, on software rendering. See
 > [Status](#status).
 
 The picture hammered into a metal sheet and lit by a lamp on a swinging cord — an FFGL
@@ -116,14 +117,15 @@ taps an axis): **0.55 ms**, **1.21 ms**, **5.38 ms**. macOS figures only.
 
 ### Not established
 
-It has **never been loaded into Resolume**. Everything above was compiled, rendered
+It has **never been loaded into Resolume on macOS**. Everything above was compiled, rendered
 and measured offline against the real plugin class in a headless CGL context, plus an
 `oxbow` load. How it looks on real footage was checked on six of Resolume's bundled
 demo clips through `--pipe` (the defaults do not flood dark clips; a dark frame is a
 flat sheet with the lamp's pool on it), not in Arena. How 21 controls read in the
 inspector, what Resolume's FFT bins actually carry, and how the Kick event arrives are
-untested. The Windows build has never been run. No OpenFX port, not in scope for
-0.1.0. No user guide yet. The [browser demo](https://repousse-demo.stoatworks-labs.com/)
+untested. On Windows it has: a build of this source (the release workflow's DLL at 844d25d, whose `source/` is v0.1.0's) loads, registers and renders in Resolume Arena 7.27.1 on software rendering (win-lab, Mesa llvmpipe, no GPU, 2026-09-24), with all 27 host controls matching the declaration, and Arena's log stays clean: 8 of the fleet Arena gate's 9 checks. The ninth, controls, read Cord Length, Damping and Swing dead, because the gate holds a still picture and never presses Kick, and a pendulum nobody pushes hangs still whatever its cord, damping and swing; the harness's `--pendulum` and `--resize` checks measure all three from the picture. The Audio input was skipped: win-lab has no sound device. Software rendering says nothing about a GPU or about speed.
+No OpenFX port and no presets. There is a [user guide](https://stoatworks-labs.com/software/repousse/guide/).
+The [browser demo](https://repousse-demo.stoatworks-labs.com/)
 runs the plugin's own five shaders, but its CPU half — every control's units, the
 Runge-Kutta pendulum and the pass order — is a hand port to JavaScript that nothing
 checks but a reader, and no audio reaches it: only its Kick button swings the lamp.
