@@ -128,9 +128,12 @@ struct Rgb
 	double r, g, b;
 };
 
-/// Normal-incidence reflectance, linear sRGB, from Real-Time Rendering, 4th
-/// ed. (Akenine-Moller, Haines, Hoffman, Pesce, Iwanicki, Hillaire, 2018),
-/// Table 9.2. Steel is the table's iron.
+/// Normal-incidence reflectance, linear sRGB, computed by tools/f0.py from
+/// published complex refractive indices (Johnson & Christy 1972 for Cu, Ag,
+/// Au; Johnson & Christy 1974 for Fe, which is Steel; Querry 1985 for the
+/// Cu70Zn30 brass), integrated against the CIE 1931 2-degree observer under
+/// D65. Gold's red is clamped to 1. `python3 tools/f0.py --check` re-derives
+/// the table and compares it with this one.
 const Rgb& MetalF0( int metal );
 
 /// What Colour stores.

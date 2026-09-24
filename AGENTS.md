@@ -266,7 +266,7 @@ runs, and every one fails for the reason it was built for.
 One character of the shipped GLSL, on a clean committed tree (3fbdec1): in the shade
 pass, `float dd = ndh * ndh * ( a2 - 1.0 ) + 1.0;` → `+ 1.1` — the GGX denominator's
 constant. Caught at both rasters by `--fresnel` (all ten cases: every F0 read back at
-about half, 0.487 for copper's 0.955) and by `--specular` (two of six cases: the
+about half, 0.487 for copper's 0.955 as the table then stood) and by `--specular` (two of six cases: the
 broadened lobe let the smooth factors move the peak one pixel, past the whole-pixel
 exactness and the fractional half-pixel bound). `--lambert` and `--shadow` passed,
 correctly: the first runs with the specular off, the second measures a shadow.
@@ -292,8 +292,17 @@ Reverted with `git checkout source/Shaders.cpp`; the tree was clean before and a
 - **Metal mode** loses the clip's colour entirely (that is what a metal sheet does);
   the clip's alpha is kept, so a clip with transparency is a sheet with holes. **Clip
   mode** is a painted sheet: dielectric F0 0.04, the clip as albedo.
-- **The metal table** is RTR4 Table 9.2 (copper, brass C260, silver, gold, iron for
-  steel), linear sRGB.
+- **The metal table is computed, not quoted.** `tools/f0.py` derives each F0 from
+  published complex refractive indices — Johnson & Christy 1972 for copper, silver and
+  gold, Johnson & Christy 1974 for iron (the plugin's steel), Querry 1985 for 70/30
+  brass (C260) — as tabulated in the refractiveindex.info database (CC0), integrated
+  against the CIE 1931 2° observer under D65 and taken to linear sRGB; the data is
+  committed under `tools/f0-data/` so the run is offline and reproducible. Gold's red
+  comes out 1.038 (outside the sRGB gamut) and is clamped to 1. The first build quoted
+  the widely reproduced *Real-Time Rendering* 4th ed. Table 9.2 from memory; the
+  computed brass agrees with it to three decimals, copper and gold are within 0.03,
+  silver and iron differ more (0.06 in blue for silver, 0.08 for iron), which is the
+  choice of n,k dataset, not an error in either. `f0.py --check` runs in verify.sh.
 - **The detector listens to bins 0–7 of 64** (regauss's Bass band) and assumes nothing
   about their law. There is no band control; the spec had none.
 - **Kick direction** steps round the golden angle per kick, the first along +x.
@@ -337,10 +346,10 @@ warm-up, `glFinish` both sides, on a GPU shared with seven other builds:
 - **No audio has ever reached it.** The detector has only met the harness's synthetic
   spectra. Whether Resolume's bins carry the level the 0.15 threshold and the ×4 gain
   assume is the first thing to check in a host.
-- **The F0 table is quoted from memory of RTR4 Table 9.2.** Two web searches on
-  2026-09-24 did not surface the table to confirm it. The values are the ones widely
-  reproduced from that table; check them against the book before the release notes
-  call them cited.
+- **The F0 table is only as good as its n,k data.** Johnson & Christy's films and
+  Querry's alloy are one measurement each; other datasets in the same database give
+  silver 0.95–0.98 and copper 0.93–0.96 in red. The plugin's numbers are those
+  datasets' numbers, computed as `tools/f0.py` states, not a measurement of any sheet.
 - **The Windows build has never been run**, or built.
 - **The nonlinear decay bound `ζθ₀²/4`** is asserted as a bound on an O(θ²) effect,
   not derived; the decay check keeps θ₀ at 0.13 rad so it is 4e-4 of the decrement

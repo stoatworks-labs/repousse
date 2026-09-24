@@ -35,7 +35,8 @@ the look, and both are in the model rather than in a filter:
    formed.
 2. **Metal is lit, not shaded.** A point lamp at a real position with inverse-square
    falloff, a microfacet highlight (GGX, height-correlated Smith, Schlick Fresnel) with
-   the tabulated reflectance of copper, brass, silver, gold or steel, a small diffuse
+   the reflectance of copper, brass, silver, gold or steel computed from published
+   refractive indices (`tools/f0.py`), a small diffuse
    term for the patina, and self-shadowing by a march over the same height field.
 
 The lamp hangs on a cord. It is a damped pendulum with the period its length gives it,

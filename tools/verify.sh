@@ -103,6 +103,14 @@ else
 fi
 
 step "offline (no GL)"
+# The metal table, re-derived from the committed n,k data and compared with
+# source/Controls.cpp: a table edited by hand drifts from its own citation.
+if out=$(python3 tools/f0.py --check 2>&1); then
+	pass "tools/f0.py: $( printf '%s\n' "$out" | tail -1 )"
+else
+	fail "tools/f0.py --check"
+	printf '%s\n' "$out" | sed 's/^/      /'
+fi
 for check in controls profile detector model clock names negative-offline; do
 	if out=$("$RPTEST" --$check 2>&1); then
 		# The negative controls' verdict, not the OFFLINE banner after it.

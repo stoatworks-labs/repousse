@@ -166,12 +166,13 @@ constexpr double kMetresPerHeight  = 1.0;
 constexpr double kMetalDiffuse     = 0.2;
 constexpr double kPaintF0          = 0.04;
 constexpr int kShadowSteps         = 32;
-/// Real-Time Rendering 4th ed., Table 9.2, linear sRGB. Steel is iron.
+/// Linear sRGB, as tools/f0.py computes it from Johnson & Christy (1972,
+/// 1974) and Querry (1985) n,k under D65; gold's red clamped to 1. Steel is iron.
 struct Rgb
 {
 	double r, g, b;
 };
-const Rgb kF0[ 5 ] = { { 0.955, 0.638, 0.538 }, { 0.910, 0.778, 0.423 }, { 0.972, 0.960, 0.915 }, { 1.000, 0.782, 0.344 }, { 0.562, 0.565, 0.578 } };
+const Rgb kF0[ 5 ] = { { 0.932, 0.623, 0.522 }, { 0.910, 0.778, 0.423 }, { 0.989, 0.984, 0.977 }, { 1.000, 0.728, 0.365 }, { 0.530, 0.513, 0.494 } };
 const char* const kMetalName[ 5 ] = { "Copper", "Brass", "Silver", "Gold", "Steel" };
 /// The detector: kicks are four times the rise above a 0.1 s baseline,
 /// released in 0.3 s, gated at 0.15.

@@ -13,11 +13,11 @@ double unit( float value )
 }
 
 const Rgb kF0[ kMetalCount ] = {
-	{ 0.955, 0.638, 0.538 },//copper
-	{ 0.910, 0.778, 0.423 },//brass (C260)
-	{ 0.972, 0.960, 0.915 },//silver
-	{ 1.000, 0.782, 0.344 },//gold
-	{ 0.562, 0.565, 0.578 },//steel: the table's iron
+	{ 0.932, 0.623, 0.522 },//copper: Johnson & Christy 1972
+	{ 0.910, 0.778, 0.423 },//brass: Querry 1985, Cu70Zn30 (C260)
+	{ 0.989, 0.984, 0.977 },//silver: Johnson & Christy 1972
+	{ 1.000, 0.728, 0.365 },//gold: Johnson & Christy 1972, red clamped from 1.038
+	{ 0.530, 0.513, 0.494 },//steel: iron, Johnson & Christy 1974
 };
 } // namespace
 
