@@ -57,6 +57,18 @@ macOS builds are signed and notarised and open normally. The Windows builds are 
 
 <!-- downloads:end -->
 
+[![Repousse — the picture hammered into metal, lit by a swinging lamp, for Resolume](docs/video-thumb.png)](https://www.youtube.com/watch?v=qEwOv_7uCkI)
+
+*[Watch it](https://www.youtube.com/watch?v=qEwOv_7uCkI) — 55 seconds:
+the sheet at the defaults with the lamp kicked into a swing, the punch at 4, 16 and 1 px, the
+lamp lowered into raking light and Depth doubled, the five metals, Roughness tightening the
+sheen and Patina darkening the recesses, a painted sheet on a 2 m cord, Show Height and Mix
+back to the clip. Every frame is the real plugin's output: an FFGL plugin has no window, so
+the footage is rendered by this repository's own offline harness (`rptest --pipe`, driven by a
+cue sheet) rather than filmed off a screen, and the clips are Resolume's bundled demo media,
+flattened onto black before the plugin (that take is v0.1.0's, and the one line v0.1.1 changed
+is exactly the alpha that flattening removed).*
+
 ## The one idea
 
 Repoussé is a sheet of metal worked from behind with punches. Two physical facts make
