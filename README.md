@@ -122,8 +122,11 @@ and measured offline against the real plugin class in a headless CGL context, pl
 demo clips through `--pipe` (the defaults do not flood dark clips; a dark frame is a
 flat sheet with the lamp's pool on it), not in Arena. How 21 controls read in the
 inspector, what Resolume's FFT bins actually carry, and how the Kick event arrives are
-untested. The Windows build has never been run. No OpenFX port and no browser demo,
-neither in scope for 0.1.0. No user guide yet.
+untested. The Windows build has never been run. No OpenFX port, not in scope for
+0.1.0. No user guide yet. The [browser demo](https://repousse-demo.stoatworks-labs.com/)
+runs the plugin's own five shaders, but its CPU half — every control's units, the
+Runge-Kutta pendulum and the pass order — is a hand port to JavaScript that nothing
+checks but a reader, and no audio reaches it: only its Kick button swings the lamp.
 
 ## Build
 
@@ -154,6 +157,7 @@ The offline harness renders the real plugin class headlessly:
 ./build/rptest --offline                               # what needs no GL (CI)
 ./build/rptest --bench                                 # 720p, 1080p and 4K
 python3 tools/sweep.py                                 # no control is silently dead
+python3 demo/tools/check_shaders.py                    # the browser demo's shaders are the plugin's
 tools/verify.sh                                        # all of it, on a fresh universal build
 ```
 

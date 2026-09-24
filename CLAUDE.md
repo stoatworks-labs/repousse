@@ -33,6 +33,10 @@ Read `AGENTS.md` before changing the punch, the lamp's law or the pendulum.
 - Every check takes `--size`; run at 320x180 (CI's raster) as well as your own.
 - No dead controls: `python3 tools/sweep.py` (`--size WxH`, `--jobs N`)
 - The shaders through glslc: `tools/check-shaders.sh build/rptest`
+- The browser demo's shaders are the plugin's, character for character: `python3 demo/tools/check_shaders.py`
+  (in verify.sh). The demo's CPU half (`demo/plugin.js`) is a hand port; only a reader checks it.
+- Deploy the demo: `cf-run npx wrangler deploy` from the repo root (a push to main also deploys it);
+  verify by content: `curl -s 'https://repousse-demo.stoatworks-labs.com/?cb=1' | grep -o '<title>[^<]*'`
 - Footage: `ffmpeg ... -f rawvideo -pix_fmt rgba - | ./build/rptest --pipe --size WxH --script cues.txt | ffmpeg -f rawvideo -pix_fmt rgba -s WxH -i - out.mov`
 
 ## Notes
@@ -77,7 +81,25 @@ Read `AGENTS.md` before changing the punch, the lamp's law or the pendulum.
 - Never loaded into Resolume. Not installed into Extra Effects. No release tag, not
   on the website; `StoatworksAbout.h` (with `guide=""`) and `ATTRIBUTIONS.md` are
   provisional hand copies.
-- No OpenFX port, no browser demo, no factory presets.
+- No OpenFX port, no factory presets.
+- **The browser demo's CPU half is a port**: `Controls.cpp`, `Pendulum.cpp`, the blur
+  weights and the pass order of `ProcessOpenGL` are a hand port in `demo/plugin.js`, and
+  nothing checks it. Change any of those and change `demo/plugin.js` by hand. The five
+  shaders themselves are checked (`demo/tools/check_shaders.py`). No audio reaches the
+  page; the onset detector is not ported and only the Kick button swings the lamp.
+
+## Browser demo
+
+`demo/` is the page at **repousse-demo.stoatworks-labs.com**, deployed from
+`wrangler.toml` with `cf-run npx wrangler deploy` and by `deploy.yml` on a push to
+main — no build step; what is committed is what is served. The host is a Worker
+route plus a proxied `AAAA 100::` record (the zone is at its custom-domain limit).
+`demo/vendor/` is copied in by
+`~/Projects/infrastructure/stoatworks-backend/resolume-demo/sync.sh repousse` and is not
+a place to edit. The shader literals in `demo/plugin.js` must stay the plugin's:
+`python3 demo/tools/check_shaders.py` (run by `tools/verify.sh`); after a change to
+`source/Shaders.cpp`, re-splice them by script rather than by hand (see AGENTS.md,
+*The browser demo*). Serve it locally with `python3 -m http.server` in `demo/`.
 
 ## Diagnostics
 

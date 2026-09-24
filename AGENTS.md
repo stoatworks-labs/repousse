@@ -126,6 +126,11 @@ once. **Primed** on the first frame and after every clock jump.
     tools/sweep.py          no control is silently dead
     tools/check-shaders.sh  the exact GLSL through glslc (CI's only look at it)
     tools/verify.sh         all of it, on a fresh universal build
+    demo/                   the browser demo: plugin.js holds the five shader
+                            strings verbatim and a hand PORT of the CPU half
+                            (Controls, Pendulum, the blur weights, the pass
+                            order); tools/check_shaders.py keeps the shaders
+                            identical; vendor/ is the shared kit (never edit it)
 
 Twelve passes at the defaults: height, two blur axes, eight morphology axes, shade.
 Nothing on the GPU outlives a frame; the pendulum and the detector are the only state,
@@ -314,7 +319,9 @@ Reverted with `git checkout source/Shaders.cpp`; the tree was clean before and a
   Resolume's bundled demo clips through `--pipe`: dark clips are a flat sheet with a
   pool of light and the relief where the picture is; transparent clips keep their
   holes. None flooded.
-- **No OpenFX, no browser demo, no factory presets** — not in scope for 0.1.0.
+- **No OpenFX, no factory presets** — not in scope for 0.1.0. The browser demo's
+  pendulum, control units and pass order are a hand port nothing checks; see *The
+  browser demo*.
 - `StoatworksAbout.h` is hand-written in the generated shape with `guide=""` and
   `page=""`; `ATTRIBUTIONS.md` likewise. The release step syncs both.
 
@@ -375,6 +382,65 @@ warm-up, `glFinish` both sides, on a GPU shared with seven other builds:
   precesses differently. Nobody will see it, but it is not the real thing.
 - A band control for the detector, and a `Bin Law` option as needle has, once
   somebody measures Resolume's bins.
+
+---
+
+## The browser demo
+
+`demo/` is the page at **repousse-demo.stoatworks-labs.com**, a static-assets Worker
+deployed from `wrangler.toml` with `cf-run npx wrangler deploy` and by
+`.github/workflows/deploy.yml` on every push to main (no build step; what is
+committed is what is served). `demo/vendor/` is the shared kit from
+`stoatworks-backend/resolume-demo/` and is not edited here. The host is a Worker
+**route** plus a proxied `AAAA 100::` DNS record, not a custom domain: the zone
+hit Cloudflare's 100-custom-domain limit on 2026-09-24. Delete that record and
+the page goes dark while deploys stay green.
+
+The page runs the plugin's five shaders, copied across unedited with their own
+`#version 410 core` line (the kit's `port()` swaps it for ES 3.00 and adds the
+precision qualifiers, nothing else): `demo/tools/check_shaders.py` compares the
+five literals with `source/Shaders.cpp` character for character and
+`tools/verify.sh` fails if one drifts. The literals were spliced in by a script
+that replaces each `const NAME = \`…\`;` body from the C++ (tabs preserved);
+after a shader change, do that again rather than paste by hand. The height buffers
+are `R32F` with linear sampling, as the plugin's, so the page needs
+`EXT_color_buffer_float` and `OES_texture_float_linear` and refuses to start
+without either rather than render a plausible wrong sheet.
+
+**What is a port**, and therefore checked by nobody but a reader: `Controls.cpp`
+function for function (every 0..1 to pixels, frame heights, metres and rad/s, the
+metal F0 table, `MorphTaps`), `Pendulum.cpp` (two planar large-angle pendulums,
+classical RK4 at a fixed 1/480 s substep, the elapsed time clamped to 0.5 s, kicks
+round the golden angle from +x), `Repousse::uploadWeights`, and the pass order of
+`Repousse::ProcessOpenGL` (height; blur x, y; the opening then the closing, each
+x then y; the lit sheet to the host framebuffer with the viewport mapped onto the
+height buffer). JavaScript numbers are doubles, as the plugin's integrator is.
+Change any of those and change `demo/plugin.js` by hand to match.
+
+What the page does differently, all of it said on the page:
+
+- **No audio.** The `Audio` FFT input is not shown and `Audio.cpp`'s onset detector
+  is not ported: a browser has no host handing it bins. Only Kick swings the lamp.
+- **Kick is a button under the canvas**, not an inspector row: the kit has no
+  control for an `FF_TYPE_EVENT`. A press sets `kickPending` and the next rendered
+  frame delivers it, as `SetFloatParameter` does; while paused, the kick is taken
+  and the lamp moves when time next advances. In `?embed=1` there is no button, so
+  the lamp hangs still.
+- **The clock is the kit's**, declared seconds; `Clock.cpp`'s unit vote never runs.
+  Restart sends it to 0, which reads as a jump and integrates no time, and does not
+  reset the pendulum (the plugin does not either).
+- The `Perturb` hooks are held at 0. The About block is absent, as on every page
+  in the suite.
+
+Decided without asking, for the page: the synthetic scene leads the clip list and
+the geometry card is second (bold shapes are what the sheet shows best); the presets
+are the page's own (the plugin ships none), expressed entirely in its parameters;
+and a line under the canvas reports where the ported pendulum put the lamp, its
+angles, the kick count and the period its cord gives it.
+
+Verified 2026-09-24 in Chrome on an M4 Max (ANGLE Metal): no console errors,
+Metal → Silver changes the picture, Kick swings the lamp, and the live page at
+the route answers by content. Never seen on a GPU other than this one.
 
 ---
 
