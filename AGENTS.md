@@ -3,7 +3,7 @@
 **What it is:** an FFGL 2.1 effect for Resolume Arena/Avenue that hammers the
 picture into a metal sheet and lights it with a lamp on a swinging cord. C++17 +
 GLSL 4.10, CMake, universal macOS `.bundle` and a Windows `.dll`. MIT, home
-`github.com/stoatworks-labs/repousse`, released at v0.1.0 on 2026-09-24 with a user guide,
+`github.com/stoatworks-labs/repousse`, released at v0.1.0 and v0.1.1 on 2026-09-24 with a user guide,
 a browser demo and a project video. Built 2026-09-24 as tranche four of the
 Resolume plugin ideas; the idea was Allan's own pick.
 
@@ -306,7 +306,9 @@ Reverted with `git checkout source/Shaders.cpp`; the tree was clean before and a
 - **Shadows is a strength (0..1)**, not a switch, and multiplies the diffuse and the
   specular; the ambient is unshadowed. Patina darkens diffuse and ambient only.
 - **Metal mode** loses the clip's colour entirely (that is what a metal sheet does);
-  the clip's alpha is kept, so a clip with transparency is a sheet with holes. **Clip
+  the sheet is opaque: a clip's transparent parts are flat sheet (luma 0), and only Mix
+  brings the clip's alpha back (v0.1.0 kept the clip's alpha, a sheet with holes, which cut
+  the sheet to the silhouette of Resolume's own alpha demo clips; v0.1.1 changed it). **Clip
   mode** is a painted sheet: dielectric F0 0.04, the clip as albedo.
 - **The metal table is computed, not quoted.** `tools/f0.py` derives each F0 from
   published complex refractive indices — Johnson & Christy 1972 for copper, silver and
@@ -328,8 +330,7 @@ Reverted with `git checkout source/Shaders.cpp`; the tree was clean before and a
   Metal colour; lamp at (0.3, 0.75) half a frame up, Intensity 0.9, Ambient 0.12,
   Shadows 1; cord 0.5 m (1.42 s), ζ 0.05 (Q 10), Swing 1.2 rad/s. Checked on six of
   Resolume's bundled demo clips through `--pipe`: dark clips are a flat sheet with a
-  pool of light and the relief where the picture is; transparent clips keep their
-  holes. None flooded.
+  pool of light and the relief where the picture is. None flooded.
 - **No OpenFX, no factory presets.** The browser demo's
   pendulum, control units and pass order are a hand port nothing checks; see *The
   browser demo*.

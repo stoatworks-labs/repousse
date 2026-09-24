@@ -2,8 +2,8 @@
 
 The picture hammered into a metal sheet and lit by a lamp on a swinging cord. FFGL
 **effect** for Resolume Arena/Avenue. C++/GLSL, CMake MODULE → universal `.bundle`
-(macOS) + Windows `.dll`. MIT, home `github.com/stoatworks-labs/repousse`; v0.1.0 released
-2026-09-24. On Windows the DLL of this source ran in Arena 7.27.1 on win-lab (software rendering): 8/9 on the fleet gate, Cord Length, Damping and Swing unprovable on a still with no Kick.
+(macOS) + Windows `.dll`. MIT, home `github.com/stoatworks-labs/repousse`; v0.1.1 released
+2026-09-24 (v0.1.0 the same day; v0.1.1 makes the sheet opaque). On Windows the DLL of this source ran in Arena 7.27.1 on win-lab (software rendering): 8/9 on the fleet gate, Cord Length, Damping and Swing unprovable on a still with no Kick.
 
 Read `AGENTS.md` before changing the punch, the lamp's law or the pendulum.
 

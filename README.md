@@ -116,7 +116,8 @@ playing does not kick the lamp.
 
 ## Status
 
-**v0.1.0, and honestly early — 24 September 2026.**
+**v0.1.1, and honestly early — 24 September 2026.** (v0.1.0 the same day; v0.1.1 makes the
+sheet opaque, where v0.1.0 kept the clip's alpha and cut the sheet to a transparent clip's silhouette.)
 
 ### Measured offline, on macOS
 

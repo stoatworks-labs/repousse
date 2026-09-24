@@ -18,7 +18,7 @@ half a frame up, a quarter of a second after a kick. The comb of fine lines at t
 narrower than the punch, so it has been lowered to exactly the height the punch's opening
 predicts; the block at the bottom right throws its shadow away from the lamp.*
 
-> **Before you rely on this:** released at **v0.1.0**, and honestly early. The physics is measured
+> **Before you rely on this:** released at **v0.1.1**, and honestly early. The physics is measured
 > rather than asserted, by a harness that drives the real plugin class and reads each claim back
 > out of the picture it made, at two rasters: five planes of known slope under five lamps read
 > the inverse-square Lambert law at every pixel and channel to 1.8e-7 against a tolerance derived
@@ -166,7 +166,8 @@ mix(1, AO, Patina), and never the highlight: tarnish sits in the recesses, and t
 points still gleam.
 
 **Colour** — **Metal** or **Clip**; Metal by default. Metal loses the clip's colour entirely, as a
-metal sheet does, and keeps its alpha: a clip with transparency is a sheet with holes. Clip is a
+metal sheet does. The sheet is opaque: a clip's transparent parts are flat sheet, and only Mix
+brings the clip's alpha back. Clip is a
 painted sheet — dielectric F0 0.04, the clip as the albedo with a full diffuse term — so a dark
 clip is a dark painted sheet with only a faint highlight; a painted sheet needs a clip with colour
 across it.
@@ -313,8 +314,8 @@ Steel and Silver are close to neutral. Use Colour: Clip for a painted sheet.
 highlight (F0 0.04), and its brightness is the clip's. It shows its relief only where the clip has
 brightness.
 
-**A clip with transparency has holes.** The clip's alpha is kept: a sheet with holes in it. Put
-something under it, or flatten the clip first.
+**A clip with transparency is a flat sheet where it was transparent.** Transparent is luma 0,
+and the sheet is opaque. Lower Mix to see the clip's own alpha again.
 
 **SW Repousse is not in the effects browser.** Check the folder under Installing, and that
 Resolume was restarted.

@@ -301,7 +301,12 @@ void main()
 	vec3 amb    = Ambient * albedo * recess;
 	vec3 colour = ( diff + spec ) * vis + amb;
 
-	vec4 sheet = vec4( colour, clip.a );
+	//A sheet is opaque. The clip's alpha shaped v0.1.0's output (a transparent
+	//clip was a sheet with holes), which cut the sheet to the silhouette of
+	//Resolume's own alpha demo clips and left no flat metal round the picture;
+	//nothing in the model cuts a sheet, so since v0.1.1 the transparent parts
+	//are flat sheet (luma 0) and Mix alone brings the clip's alpha back.
+	vec4 sheet = vec4( colour, 1.0 );
 	if( MixAmount >= 1.0 )
 	{
 		fragColor = sheet;
