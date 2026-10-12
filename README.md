@@ -1,29 +1,22 @@
 # repousse
 
 > **AI-assisted project.** This codebase was created with [Claude](https://claude.com/claude-code)
-> (Anthropic), directed and reviewed by a human author. The physics is not asserted but
-> measured: an offline harness drives the real plugin class in a headless GL context and
-> reads each claim back out of the picture — planes of known slope under a grid of lamps
-> read the lamp's inverse-square Lambert law to a tolerance derived from one float ulp;
-> the highlight on a hemisphere lands on the exact pixel the half-vector point predicts;
-> each metal reflects its tabulated F0 at normal incidence; the shadow behind a step is
-> h / tan θ within one march step; a ridge narrower than the punch comes out exactly the
-> height the opening predicts and a wider one keeps its height; the lamp's period, read
-> from its position in the picture over six seconds, is 2π√(L/g) with the large-angle
-> correction to 4 parts in 10⁵, and its decay matches the stated Q — with seventeen
-> negative controls that prove each check can fail, and one mutation of the shipped GLSL
-> that two of them catch. It has **never been loaded into Resolume on macOS**; on
-> Windows it has run in Resolume Arena 7.27.1, on software rendering. See
-> [Status](#status).
+> (Anthropic), directed and reviewed by a human author. The physics is measured rather than
+> asserted: an offline harness drives the real plugin code and reads each claim back out of the
+> picture (the lamp's falloff, the highlight, each metal's reflectance, the shadows, the punch,
+> and the pendulum's period and decay), with seventeen negative controls that prove each check
+> can fail. It has **never been loaded into Resolume on macOS**; on Windows it has run in
+> Resolume Arena 7.27.1, on software rendering. The numbers are under [Status](#status).
 
-The picture hammered into a metal sheet and lit by a lamp on a swinging cord — an FFGL
-effect for [Resolume](https://resolume.com) Arena and Avenue.
+Your clip hammered into a sheet of metal and lit by a lamp on a swinging cord, as an FFGL
+effect for [Resolume](https://resolume.com) Arena and Avenue. Give the lamp a kick (or let the
+music do it) and the highlights slide across the relief.
 
 ![A synthetic relief card rendered as chased copper: a dome, a ring, a raised block with a shadow off its lower edge, a comb of fine lines the punch has flattened, and a rough patch, under a lamp hung up and to the left whose pool of light sits on the sheet](docs/hero.png)
 
-<sub>One frame, rendered by `rptest`, the offline harness — not captured from Resolume.
-The defaults, on the harness's moving relief card, a quarter of a second after
-a kick.</sub>
+<sub>One frame, rendered by `rptest`, the offline harness, rather than captured from
+Resolume: the defaults, on the harness's moving relief card, a quarter of a second after a
+kick.</sub>
 
 <!-- downloads:start -->
 
@@ -59,40 +52,40 @@ macOS builds are signed and notarised and open normally. The Windows builds are 
 
 [![Repousse — the picture hammered into metal, lit by a swinging lamp, for Resolume](docs/video-thumb.png)](https://www.youtube.com/watch?v=qEwOv_7uCkI)
 
-*[Watch it](https://www.youtube.com/watch?v=qEwOv_7uCkI) — 55 seconds:
-the sheet at the defaults with the lamp kicked into a swing, the punch at 4, 16 and 1 px, the
-lamp lowered into raking light and Depth doubled, the five metals, Roughness tightening the
-sheen and Patina darkening the recesses, a painted sheet on a 2 m cord, Show Height and Mix
-back to the clip. Every frame is the real plugin's output: an FFGL plugin has no window, so
-the footage is rendered by this repository's own offline harness (`rptest --pipe`, driven by a
-cue sheet) rather than filmed off a screen, and the clips are Resolume's bundled demo media,
-flattened onto black before the plugin (that take is v0.1.0's, and the one line v0.1.1 changed
-is exactly the alpha that flattening removed).*
+*[Watch it](https://www.youtube.com/watch?v=qEwOv_7uCkI) (55 seconds): the sheet at the
+defaults with the lamp kicked into a swing, the punch at 4, 16 and 1 px, the lamp lowered
+into raking light and Depth doubled, the five metals, Roughness tightening the sheen and
+Patina darkening the recesses, a painted sheet on a 2 m cord, Show Height and Mix back to the
+clip. It's all the plugin's own output. An FFGL plugin doesn't have a window to film, so the
+footage comes from this repo's own offline harness (`rptest --pipe`, driven by a cue sheet)
+rather than a screen recording, and the clips are Resolume's bundled demo media, flattened
+onto black before the plugin. (That take is v0.1.0's, and the one line v0.1.1 changed is the
+very alpha that the flattening removed.)*
 
 ## The one idea
 
-Repoussé is a sheet of metal worked from behind with punches. Two physical facts make
-the look, and both are in the model rather than in a filter:
+Repoussé is a sheet of metal worked from behind with punches. Two physical facts make the
+look, and both are in the model rather than bolted on as a filter:
 
-1. **The punch sets the finest detail.** A sheet can be pushed only as sharply as the
-   tool that pushes it. The brightness is read as height, then opened and closed by the
-   punch's profile. Detail narrower than the punch is not blurred away; it is never
-   formed.
-2. **Metal is lit, not shaded.** A point lamp at a real position with inverse-square
-   falloff, a microfacet highlight (GGX, height-correlated Smith, Schlick Fresnel) with
-   the reflectance of copper, brass, silver, gold or steel computed from published
-   refractive indices (`tools/f0.py`), a small diffuse
-   term for the patina, and self-shadowing by a march over the same height field.
+1. **The punch sets the finest detail.** A sheet can only be pushed as sharply as the tool
+   that's pushing it. The brightness is read as height, then opened and closed by the
+   punch's profile. Detail narrower than the punch isn't blurred away, because it never gets
+   formed in the first place.
+2. **Metal is lit, not shaded.** There's a point lamp at an actual position with
+   inverse-square falloff, a microfacet highlight (GGX, height-correlated Smith, Schlick
+   Fresnel) with the reflectance of copper, brass, silver, gold or steel computed from
+   published refractive indices (`tools/f0.py`), a small diffuse term for the patina, and
+   self-shadowing by a march over the same height field.
 
-The lamp hangs on a cord. It is a damped pendulum with the period its length gives it,
-and an onset in the audio — or the Kick button — gives it a push. That is the only
-audio coupling there is.
+The lamp hangs on a cord. It's a damped pendulum with the period its length gives it, and an
+onset in the audio (or the Kick button) gives it a push. That's the only way the audio gets
+in.
 
 ## What falls out
 
-None of these is drawn on purpose:
+None of these is painted in by hand:
 
-- **Raking light.** Lower the lamp and every ridge throws a long shadow; the relief
+- **Raking light.** Lower the lamp and every ridge throws a long shadow, and the relief
   reads far deeper than its sixteen pixels.
 - **Highlights slide across the relief as the lamp swings**, on the mirror points the
   microfacet model puts them at, and the pool of light under the lamp moves with it.
@@ -100,18 +93,18 @@ None of these is drawn on purpose:
   recesses, because the recesses are where the horizon is high.
 - **Punch size is style.** A big punch gives soft chased work; a fine one gives crisp
   engraving. A ridge narrower than the punch is lowered to d²/2R, whatever its height.
-- **The swing is the music's.** A hard hit swings the lamp further and — as a real
-  pendulum does — a little slower; a run of hits swings it in a rosette.
+- **The swing is the music's.** A hard hit swings the lamp further and, as a real
+  pendulum does, a little slower; a run of hits swings it round in a rosette.
 
 ### The honest limit
 
-The relief is the picture's brightness. A bright shirt is a bump whether or not it is
-in front of anything, and a dark frame is a flat sheet with a lamp on it. The punch is
-a rounded tip on a square shank, not a ball on a round one: on ridges and edges it is
-the sphere to within the profile error stated in `AGENTS.md`, on an isolated dot it is
-a little squarer. And the lamp has never met Resolume's FFT: what its 64 bins carry is
-unmeasured, so the detector listens to the lowest eight of them and assumes nothing
-about their law.
+The relief is the picture's brightness. A bright shirt is a bump whether or not it's in
+front of anything, and a dark frame is a flat sheet with a lamp on it. The punch is a
+rounded tip on a square shank rather than a ball on a round one: on ridges and edges it's
+the sphere to within the profile error stated in `AGENTS.md`, and on an isolated dot it's a
+little squarer. And the lamp has never met Resolume's FFT. Nobody's measured what its 64 bins
+carry, so the detector listens to the lowest eight of them and assumes nothing about their
+law.
 
 ## Controls
 
@@ -124,18 +117,19 @@ about their law.
 
 With no audio routed the lamp hangs still. The onset detector is primed on the first
 frame and after every jump in the clock, so triggering a clip with the music already
-playing does not kick the lamp.
+playing doesn't kick the lamp.
 
 ## Status
 
-**v0.1.1, and honestly early — 24 September 2026.** (v0.1.0 the same day; v0.1.1 makes the
-sheet opaque, where v0.1.0 kept the clip's alpha and cut the sheet to a transparent clip's silhouette.)
+**v0.1.1, and still early days (24 September 2026).** v0.1.0 came out the same day. v0.1.1
+makes the sheet opaque, where v0.1.0 kept the clip's alpha and cut the sheet to a
+transparent clip's silhouette.
 
 ### Measured offline, on macOS
 
-`tools/verify.sh` passes on this machine (M4 Max, macOS 26.4) against a fresh
-universal Release build, running every rendered check at **two rasters**, 320×180 and
-1280×720. What it establishes:
+`tools/verify.sh` passes on this Mac (M4 Max, macOS 26.4) against a fresh universal Release
+build, running every rendered check at two rasters, 320×180 and 1280×720. Here's what it
+shows:
 
 | check | result |
 | --- | --- |
@@ -158,22 +152,33 @@ universal Release build, running every rendered check at **two rasters**, 320×1
 Render cost at the defaults, best of three runs of 60 frames after a warm-up,
 `glFinish` both sides, on a GPU shared with other work: **0.31 ms** at 720p,
 **0.51 ms** at 1080p, **2.61 ms** at 4K. With the punch at its maximum (16 px, 33
-taps an axis): **0.55 ms**, **1.21 ms**, **5.38 ms**. macOS figures only.
+taps an axis): **0.55 ms**, **1.21 ms**, **5.38 ms**. These are macOS figures only.
 
 ### Not established
 
 It has **never been loaded into Resolume on macOS**. Everything above was compiled, rendered
 and measured offline against the real plugin class in a headless CGL context, plus an
-`oxbow` load. How it looks on real footage was checked on six of Resolume's bundled
-demo clips through `--pipe` (the defaults do not flood dark clips; a dark frame is a
-flat sheet with the lamp's pool on it), not in Arena. How 21 controls read in the
-inspector, what Resolume's FFT bins actually carry, and how the Kick event arrives are
-untested. On Windows it has: a build of this source (the release workflow's DLL at 844d25d, whose `source/` is v0.1.0's) loads, registers and renders in Resolume Arena 7.27.1 on software rendering (win-lab, Mesa llvmpipe, no GPU, 2026-09-24), with all 27 host controls matching the declaration, and Arena's log stays clean: 8 of the fleet Arena gate's 9 checks. The ninth, controls, read Cord Length, Damping and Swing dead, because the gate holds a still picture and never presses Kick, and a pendulum nobody pushes hangs still whatever its cord, damping and swing; the harness's `--pendulum` and `--resize` checks measure all three from the picture. The Audio input was skipped: win-lab has no sound device. Software rendering says nothing about a GPU or about speed.
-No OpenFX port and no presets. There is a [user guide](https://stoatworks-labs.com/software/repousse/guide/).
-The [browser demo](https://repousse-demo.stoatworks-labs.com/)
-runs the plugin's own five shaders, but its CPU half — every control's units, the
-Runge-Kutta pendulum and the pass order — is a hand port to JavaScript that nothing
-checks but a reader, and no audio reaches it: only its Kick button swings the lamp.
+`oxbow` load. How it looks on real footage was checked on six of Resolume's bundled demo
+clips through `--pipe` (the defaults don't flood dark clips; a dark frame is a flat sheet
+with the lamp's pool on it), not in Arena. How 21 controls read in the inspector, what
+Resolume's FFT bins actually carry, and how the Kick event arrives are all untested.
+
+On Windows, a build of this source (the release workflow's DLL at 844d25d, whose `source/`
+is v0.1.0's) loads, registers and renders in Resolume Arena 7.27.1 on software rendering
+(win-lab, Mesa llvmpipe, no GPU, 2026-09-24), with all 27 host controls matching the
+declaration, and Arena's log stays clean. That's 8 of the fleet Arena gate's 9 checks. The
+ninth, controls, read Cord Length, Damping and Swing as dead, because the gate holds a still
+picture and never presses Kick, and a pendulum nobody pushes hangs still whatever its cord,
+damping and swing. The harness's `--pendulum` and `--resize` checks measure all three from
+the picture. The Audio input was skipped, as win-lab hasn't got a sound device. Software
+rendering says nothing about a GPU or about speed.
+
+There's no OpenFX port and there are no presets. There is a
+[user guide](https://stoatworks-labs.com/software/repousse/guide/). The
+[browser demo](https://repousse-demo.stoatworks-labs.com/) runs the plugin's own five
+shaders, but its CPU half (every control's units, the Runge-Kutta pendulum and the pass
+order) is a hand port to JavaScript that nothing checks except a person reading it, and no
+audio reaches it, so only its Kick button swings the lamp.
 
 ## Build
 
@@ -192,7 +197,7 @@ macOS builds are universal (Apple Silicon + Intel) by default; add
 
 ## Building and testing
 
-The offline harness renders the real plugin class headlessly:
+The offline harness renders the real plugin class headless:
 
 ```bash
 ./build/rptest --out /tmp/frame.png --size 1920x1080   # the moving relief card
@@ -217,8 +222,8 @@ ffmpeg -i in.mov -f rawvideo -pix_fmt rgba - \
   | ffmpeg -f rawvideo -pix_fmt rgba -s 1920x1080 -r 60 -i - out.mov
 ```
 
-See [`CLAUDE.md`](CLAUDE.md) for the full command reference and
-[`AGENTS.md`](AGENTS.md) for the model and the traps.
+[`CLAUDE.md`](CLAUDE.md) has the full command reference, and [`AGENTS.md`](AGENTS.md) the
+model and the traps.
 
 <!-- attributions:start -->
 This project is built on other people's work — see [ATTRIBUTIONS.md](ATTRIBUTIONS.md).
